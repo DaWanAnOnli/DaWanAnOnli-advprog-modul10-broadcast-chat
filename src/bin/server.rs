@@ -9,7 +9,7 @@ use tokio_websockets::{Message, ServerBuilder, WebSocketStream};
 async fn handle_connection(
     addr: SocketAddr,
     mut ws_stream: WebSocketStream<TcpStream>,
-    bcast_tx: Sender<String>,
+    bcast_tx: Sender<(String, SocketAddr)>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
 
     ws_stream
@@ -26,8 +26,8 @@ async fn handle_connection(
                 match incoming {
                     Some(Ok(msg)) => {
                         if let Some(text) = msg.as_text() {
-                            println!("From client {addr:?} {text:?}");
-                            bcast_tx.send(text.into())?;
+                            println!("From client {addr:?}: {text}", addr = addr, text = text);
+                            bcast_tx.send((text.into(), addr))?;
                         }
                     }
                     Some(Err(err)) => return Err(err.into()),
@@ -35,7 +35,10 @@ async fn handle_connection(
                 }
             }
             msg = bcast_rx.recv() => {
-                ws_stream.send(Message::text(msg?)).await?;
+                if let Ok((msg, sender_addr)) = msg {
+                    let full_msg = format!("{}: {}", sender_addr, msg);
+                    ws_stream.send(Message::text(full_msg)).await?;
+                }
             }
         }
     }
