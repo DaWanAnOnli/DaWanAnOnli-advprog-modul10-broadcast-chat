@@ -19,3 +19,13 @@ Saat beberapa client dan server dijalankan bersama-sama, kita dapat mengetikkan 
 ![image](https://github.com/DaWanAnOnli/DaWanAnOnli-advprog-modul10-broadcast-chat/assets/124868777/38553e77-b903-42e4-9215-ec1ca2023b59)
 
 Modul menginstruksikan agar kita mengubah port di client menjadi 8080. Hal ini berarti client akan mencoba membuat koneksi ke port 8080. Namun kita tahu server menunggu koneksi di port 2000. Maka jika hanya port client saja yang diubah, akan terjadi error. Oleh karena itu, kita perlu mengubah port di server juga menjadi 8080. Dengan ini, server akan menunggu di port yang tepat, yaitu port yang menjadi tujuan client saat mengirimkan pesan.
+
+
+
+<h2>
+  Experiment 2.3: Small changes, add IP and Port
+</h2>
+
+![image](https://github.com/DaWanAnOnli/DaWanAnOnli-advprog-modul10-broadcast-chat/assets/124868777/728d6d95-8fcc-433f-bcac-7db4edb4ee2d)
+
+Agar informasi IP dan Port sender bisa muncul di semua client saat server melakukan broadcast, perlu dilakukan beberapa perubahan. Pertama, definisi ```bcast_tx``` di ```server.rs``` perlu diganti. Kita buat agar ```bcast_text``` menerima value pair String (message), dan SocketAddr (informasi sender). Lalu saat kita melakukan receive (di ```bcast_rx```), kita menerima value pair dari sender, yaitu message dan informasi sender. Kita perlu format ini ke dalam satu message untuk bisa dikirim. Terakhir, saat kita broadcast, kita mengirimkan kedua informasi tersebut ke semua client.
